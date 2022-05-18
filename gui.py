@@ -6,7 +6,7 @@ from PIL import ImageTk, Image
 import pygame
 import pygame.camera
 import time
-
+import pathlib
 import numpy
 #load the trained model to classify sign
 from tensorflow.keras.models import load_model
@@ -121,9 +121,15 @@ def camera_capture():
         cam.stop()
 
         # saving the image
-        file_path = "./tmp/%s.jpg" % str(round(time.time() * 1000))[-1]
-        pygame.image.save(image, file_path)
+        pathlib.Path(pathlib.Path(pathlib.Path().cwd(), 'tmp')).mkdir(parents=True, exist_ok=True)
+        file_path = pathlib.Path(
+            pathlib.Path().cwd(),
+            'tmp',
+            '%s.jpg' % str(round(time.time() * 1000))[-5:]
+        )
         
+        pygame.image.save(image, file_path)
+
         uploaded=Image.open(file_path)
         uploaded.thumbnail(((top.winfo_width()/2.25),(top.winfo_height()/2.25)))
         im=ImageTk.PhotoImage(uploaded)
