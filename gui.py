@@ -3,6 +3,9 @@ import tkinter as tk
 from tkinter import filedialog
 from tkinter import *
 from PIL import ImageTk, Image
+import pygame
+import pygame.camera
+import time
 
 import numpy
 #load the trained model to classify sign
@@ -97,9 +100,51 @@ def upload_image():
     except:
         pass
 
+def camera_capture():
+    # initializing the camera
+    pygame.camera.init()
+
+    # make the list of all available cameras
+    camlist = pygame.camera.list_cameras()
+
+    # if camera is detected or not
+    if camlist:
+
+        # initializing the cam variable with default camera
+        cam = pygame.camera.Camera(camlist[0], (640, 480))
+
+        # opening the camera
+        cam.start()
+
+        # capturing the single image
+        image = cam.get_image()
+        cam.stop()
+
+        # saving the image
+        file_path = "./tmp/%s.jpg" % str(round(time.time() * 1000))[-1]
+        pygame.image.save(image, file_path)
+        
+        uploaded=Image.open(file_path)
+        uploaded.thumbnail(((top.winfo_width()/2.25),(top.winfo_height()/2.25)))
+        im=ImageTk.PhotoImage(uploaded)
+        
+        sign_image.configure(image=im)
+        sign_image.image=im
+        label.configure(text='')
+        show_classify_button(file_path)
+
+    # if camera is not detected the moving to else part
+    else:
+        print("No camera on current device")
+
+
+camera=Button(top,text="camera",command=camera_capture,padx=10,pady=5)
+camera.configure(background='#364156', foreground='white',font=('arial',10,'bold'))
+
 upload=Button(top,text="Upload an image",command=upload_image,padx=10,pady=5)
 upload.configure(background='#364156', foreground='white',font=('arial',10,'bold'))
 
+camera.pack(side=BOTTOM,pady=50)
 upload.pack(side=BOTTOM,pady=50)
 sign_image.pack(side=BOTTOM,expand=True)
 label.pack(side=BOTTOM,expand=True)
