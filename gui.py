@@ -116,6 +116,7 @@ def camera_capture():
         # opening the camera
         cam.start()
 
+        time.sleep(0.30)
         # capturing the single image
         image = cam.get_image()
         cam.stop()
